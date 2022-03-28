@@ -1,0 +1,142 @@
+body{
+    margin:0;
+    padding: 0;
+    outline: none;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 300;
+}
+.input{
+    width: 60%;
+}
+.header{
+    display: flex;
+    justify-content: center;
+    background-color: #ffbd5f;
+    height: 50px;
+}
+.contentHeader{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 25%;
+}
+.logo{
+
+    width: 150px;
+    line-height: 50px;
+    font-weight: bold;
+    color: #ffffff;
+    font-size: 24px;
+    cursor: pointer;
+}
+.button {
+    background-color: #ff6602;
+    border: 1px solid #ffb254;
+    color: #fff;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 10px 15px;
+    font-size: 12px;
+    height: 40px;
+    outline: none;
+}
+
+.button:hover {
+    background-color: #ffb779;
+    border-color: #ea8f4d;
+}
+.blockTodos{
+    display: flex;
+    justify-content: center;
+}
+.containerTodos{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 80%;
+}
+.buttonApp {
+    background-color: #ff6602;
+    border: 1px solid #ffb254;
+    color: #fff;
+    font-weight: 200;
+    text-transform: uppercase;
+    font-size: 12px;
+    height: 30px;
+    width: 20%;
+    margin-left: 20px;
+}
+
+.buttonApp:hover {
+    background-color: #ffb779;
+    border-color: #ea8f4d;
+}
+.todoForm{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 500px;
+    border: 2px solid #ff6602;
+    border-radius: 10px;
+}
+.title{
+    text-align: right;
+    font-size: 32px;
+}
+.titleTask{
+    text-align: center;
+    font-size: 24px;
+}
+.forAddTodo{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 2px solid #ff6602;
+    margin-bottom: 5px;
+
+}
+.blockTitleInput{
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    width: 100%;
+    margin-bottom: 15px;
+
+}
+.forAddTodoCase{
+    display: flex;
+    justify-content: center;
+}
+.deleteNotebookButton{
+    display: flex;
+    align-items: center;
+    background-color: coral;
+    border: 1px solid coral;
+    color: #fff;
+    font-weight: 200;
+    font-size: 12px;
+    height: 40px;
+    margin-top: 35px;
+    margin-left: 15px;
+
+}
+.setNotebook{
+    display: flex;
+}
+.addTodosButton{
+    display: flex;
+    align-items: center;
+    background-color: coral;
+    border: 1px solid coral;
+    color: #fff;
+    font-weight: 200;
+    font-size: 12px;
+    height: 40px;
+    margin-bottom: 15px;
+    margin-top: 20px;
+    margin-left: 15px;
+}
+.setTodos{
+    display: flex;
+}
