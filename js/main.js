@@ -5,24 +5,27 @@ Vue.component('todo-list', {
             <div class="containerTodos">
                 <div class="setNotebook">
                     <p class="title" @click="hiddenVisShow">{{message}}</p>
-                    <button class="deleteNotebookButton" @click="deleteNotebook(e)">X</button>
+                    <button class="deleteNotebookButton" @click="todos.deleteNotebook(e)">X</button>
                 </div>
                 <div class="todoForm" v-for="(todo, e) in todos">
-<!--                     <p class="title" @click="hiddenVisShow">{{message}}</p>-->
                     <div class="blockTitleInput">
-                        <input class="input" v-if="visibility" v-model="message" placeholder="Введи название блокнота">
+                        <input class="input" v-if="visibility" v-model="message" placeholder="Для работы введите название блокнота">
                         <button class="buttonApp" v-if="visibility" @click="hiddenVis">Применить</button>
                     </div>
-                        <div class="forAddTodo" v-for="(task, x) in newTodoCase" :key="task.caseID">
+                        <div class="forAddTodo" v-for="(task, x) in newTodoCase">
                             <div class="setTodos">
-                                <p class="titleTask">{{ task.caseTitle }} </p>
-                                <button class="addTodosButton" @click="deleteCase(x)">X</button>
+                             <input type="text"
+                                v-if="task.isEditing"
+                                @keyup.enter="editTask(task.caseTitle)"
+                                v-model="editValue">
+                                <p class="titleTask"  @click="renameTask(task.caseTitle)" v-else>{{ task.caseTitle }} </p>
+                                <button class="addTodosButton" @click="deleteTask(x)">X</button>                             
                             </div>
                         </div>
                         <div class="forCase">
                             <form class="forAddTodoCase" @submit.prevent="addTodo">
                                 <div class="blockTitleInput">
-                                    <input v-if="visibilityTodos" class="input" placeholder="Добавь задачу" v-model="newCaseTitle">
+                                    <input v-if="visibilityTodos" class="input" placeholder="Добавь задачу" v-model="newTaskTitle">
                                     <button class="buttonApp" v-if="visibilityTodos">+</button>
                               </div>
                             </form>
@@ -33,18 +36,33 @@ Vue.component('todo-list', {
         </div>
     `, data() {
         return {
+            editValue:'',
             visibility: true,
             visibilityTodos:false,
             message: '',
             newTodoTitle: '',
-            newTodo: [],
-            newTodoCase: [],
-            newCaseTitle: '',
+            newTodo: [
+            ],
+            newTodoCase: [
+                {
+                    caseTitle:'Ваши задачи',
+                    isEditing: false
+                }
+            ],
+            newTaskTitle: '',
             clicked: false,
             errors: []
         }
     },
-
+    mounted() {
+        if (localStorage.getItem('newTodoCase')) {
+            try {
+                this.Notebook = JSON.parse(localStorage.getItem('newTodoCase'));
+            } catch (e) {
+                localStorage.removeItem('newTodoCase');
+            }
+        }
+    },
     methods: {
         hiddenVis: function () {
             this.visibility = false;
@@ -61,14 +79,35 @@ Vue.component('todo-list', {
 
         addTodo: function () {
             this.newTodoCase.push({
-                caseTitle: this.newCaseTitle,
+                caseTitle: this.newTaskTitle,
             })
-            this.newCaseTitle = ''
+            this.newTaskTitle = ''
         },
 
-        deleteCase(x) {
+        deleteTask(x) {
             this.newTodoCase.splice(x, 1)
-        }
+        },
+        resetStatus(index){
+            this.todos[index].status= !this.todos[index].status;
+        },
+        renameTask(NewTitle) {
+            this.editValue = NewTitle;
+            this.newTodoCase = this.newTodoCase.map(task => {
+                if (task.caseTitle === NewTitle) {
+                    task.isEditing = !task.isEditing;
+                }
+                return task;
+            })
+        },
+        editTask(NewTitle) {
+            this.newTodoCase = this.newTodoCase.map(task => {
+                if (task.caseTitle === NewTitle) {
+                    task.isEditing = !task.isEditing;
+                    task.caseTitle = this.editValue;
+                }
+                return task;
+            })
+        },
     }
 })
 
@@ -77,12 +116,26 @@ let app = new Vue({
     el: '#app', data: {
         Notebook: [],
         todos: []
-    }, methods: {
-
+    },
+    mounted() {
+        if (localStorage.getItem('Notebook')) {
+            try {
+                this.Notebook = JSON.parse(localStorage.getItem('Notebook'));
+            } catch (e) {
+                localStorage.removeItem('Notebook');
+            }
+        }
+    },
+    methods: {
+        saveNotebook() {
+            const parsedTodos = JSON.stringify(this.Notebook);
+            localStorage.setItem('Notebook', parsedTodos);
+        },
         addNotebook() {
             this.Notebook.push({
                 todos: this.todos
             })
+            this.saveNotebook()
         },
         deleteNotebook(e) {
             this.todos.Notebook.splice(e, 1)

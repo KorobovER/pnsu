@@ -5,6 +5,9 @@ body{
     font-family: 'Ubuntu', sans-serif;
     font-weight: 300;
 }
+.cross {
+    text-decoration: line-through;
+}
 .input{
     width: 60%;
 }
@@ -121,6 +124,9 @@ body{
     margin-left: 15px;
 
 }
+.deleteNotebookButton:hover{
+    background-color: #ffc5ad;
+}
 .setNotebook{
     display: flex;
 }
@@ -136,6 +142,9 @@ body{
     margin-bottom: 15px;
     margin-top: 20px;
     margin-left: 15px;
+}
+.addTodosButton:hover{
+    background-color: #ffc5ad;
 }
 .setTodos{
     display: flex;
