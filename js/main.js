@@ -1,32 +1,33 @@
 Vue.component('todo-list', {
-    props: ['todos'], template: `
+    props: ['todos','Notebook'], template: `
     <div>
         <div class="blockTodos">
             <div class="containerTodos">
                 <div class="setNotebook">
-                    <p class="title" @click="hiddenVisShow">{{message}}</p>
+                <input type="text"
+                                v-if="todos.val"
+                                @keyup.enter="todos.editNotebook(todos.notebookTitle)"
+                                v-model="todos.renameNotebook">
+                    <p class="title" @click="renameNk(todos.notebookTitle)" v-else>{{todos.notebookTitle}}</p>
                     <button class="deleteNotebookButton" @click="todos.deleteNotebook(e)">X</button>
                 </div>
                 <div class="todoForm" v-for="(todo, e) in todos">
-                    <div class="blockTitleInput">
-                        <input class="input" v-if="visibility" v-model="message" placeholder="Для работы введите название блокнота">
-                        <button class="buttonApp" v-if="visibility" @click="hiddenVis">Применить</button>
-                    </div>
                         <div class="forAddTodo" v-for="(task, x) in newTodoCase">
                             <div class="setTodos">
                              <input type="text"
                                 v-if="task.isEditing"
                                 @keyup.enter="editTask(task.caseTitle)"
                                 v-model="editValue">
-                                <p class="titleTask"  @click="renameTask(task.caseTitle)" v-else>{{ task.caseTitle }} </p>
+                                <p class="titleTask"  v-else :class="{'strike': task.isCompleted}" @click="task.isCompleted = !task.isCompleted">{{ task.caseTitle }} </p>
+                                <button class="addTodosButton" @click="renameTask(task.caseTitle)">Переименовать</button>
                                 <button class="addTodosButton" @click="deleteTask(x)">X</button>                             
                             </div>
                         </div>
                         <div class="forCase">
                             <form class="forAddTodoCase" @submit.prevent="addTodo">
                                 <div class="blockTitleInput">
-                                    <input v-if="visibilityTodos" class="input" placeholder="Добавь задачу" v-model="newTaskTitle">
-                                    <button class="buttonApp" v-if="visibilityTodos">+</button>
+                                    <input  class="input" placeholder="Добавь задачу" v-model="newTaskTitle">
+                                    <button class="buttonApp">+</button>
                               </div>
                             </form>
                         </div>
@@ -34,24 +35,13 @@ Vue.component('todo-list', {
                 </div>
             </div>
         </div>
-    `, data() {
+    `,
+    data() {
         return {
-            editValue:'',
-            visibility: true,
-            visibilityTodos:false,
-            message: '',
+            editValue: '',
             newTodoTitle: '',
-            newTodo: [
-            ],
-            newTodoCase: [
-                {
-                    caseTitle:'Ваши задачи',
-                    isEditing: false
-                }
-            ],
+            newTodoCase: [{isCompleted: false}],
             newTaskTitle: '',
-            clicked: false,
-            errors: []
         }
     },
     mounted() {
@@ -64,32 +54,21 @@ Vue.component('todo-list', {
         }
     },
     methods: {
-        hiddenVis: function () {
-            this.visibility = false;
-            this.visibilityTodos = true;
-        },
-        hiddenVisShow: function () {
-            this.visibility = true;
-        },
-        addTod: function () {
-            this.newTodo.push({
-                todoCase: this.newTodoCase,
-            })
-        },
 
         addTodo: function () {
             this.newTodoCase.push({
                 caseTitle: this.newTaskTitle,
+                isCompleted: false
             })
-            this.newTaskTitle = ''
+            this.newTaskTitle = '';
+            this.todos.saveTodos()
+
         },
 
         deleteTask(x) {
             this.newTodoCase.splice(x, 1)
         },
-        resetStatus(index){
-            this.todos[index].status= !this.todos[index].status;
-        },
+
         renameTask(NewTitle) {
             this.editValue = NewTitle;
             this.newTodoCase = this.newTodoCase.map(task => {
@@ -98,6 +77,7 @@ Vue.component('todo-list', {
                 }
                 return task;
             })
+
         },
         editTask(NewTitle) {
             this.newTodoCase = this.newTodoCase.map(task => {
@@ -107,13 +87,17 @@ Vue.component('todo-list', {
                 }
                 return task;
             })
+
         },
     }
 })
 
 
 let app = new Vue({
-    el: '#app', data: {
+    el: '#app',
+    data: {
+        renameNotebook: '',
+        newNotebookTitle: '',
         Notebook: [],
         todos: []
     },
@@ -125,17 +109,47 @@ let app = new Vue({
                 localStorage.removeItem('Notebook');
             }
         }
+        if (localStorage.getItem('todos')) {
+            try {
+                this.Notebook = JSON.parse(localStorage.getItem('todos'));
+            } catch (e) {
+                localStorage.removeItem('todos');
+            }
+        }
     },
     methods: {
+        saveTodos() {
+            const parsedTodos = JSON.stringify(this.todos);
+            localStorage.setItem('todos', parsedTodos);
+        },
         saveNotebook() {
-            const parsedTodos = JSON.stringify(this.Notebook);
-            localStorage.setItem('Notebook', parsedTodos);
+            const parsedNotebook = JSON.stringify(this.Notebook);
+            localStorage.setItem('Notebook', parsedNotebook);
         },
         addNotebook() {
             this.Notebook.push({
-                todos: this.todos
+                notebookTitle: this.newNotebookTitle,
             })
-            this.saveNotebook()
+            this.newNotebookTitle = '';
+            this.saveNotebook();
+        },
+        renameNk(newNotebook) {
+            this.renameNotebook = newNotebook;
+            this.Notebook = this.Notebook.map(todos => {
+                if (todos.notebookTitle === newNotebook) {
+                    todos.val = !todos.val;
+                }
+                return todos;
+            })
+        },
+        editNotebook(newNotebook) {
+            this.Notebook = this.Notebook.map(todos => {
+                if (todos.notebookTitle === newNotebook) {
+                    todos.val = !todos.isEditing;
+                    todos.notebookTitle = this.renameNotebook;
+                }
+                return todos;
+            })
         },
         deleteNotebook(e) {
             this.todos.Notebook.splice(e, 1)

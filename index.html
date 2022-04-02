@@ -15,9 +15,12 @@
     <div class="header">
         <div class="contentHeader">
             <div class="logo">Деловик</div>
-            <button class="button" @click="addNotebook">
-                Добавить Блокнот
-            </button>
+            <div class="containerCreateNk">
+                <input class="input" placeholder="Введите название блокнота" v-model="newNotebookTitle">
+                <button class="button" @click="addNotebook">
+                    Добавить Блокнот
+                </button>
+            </div>
         </div>
     </div>
     {{Notebook}}
