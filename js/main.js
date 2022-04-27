@@ -1,5 +1,5 @@
 Vue.component('todo-list', {
-    props: ['todos','Notebook'], template: `
+    props: ['todos','Notebook', 'index'], template: `
     <div>
         <div class="blockTodos">
             <div class="containerTodos">
@@ -9,9 +9,9 @@ Vue.component('todo-list', {
                                 @keyup.enter="todos.editNotebook(todos.notebookTitle)"
                                 v-model="todos.renameNotebook">
                     <p class="title" @click="renameNk(todos.notebookTitle)" v-else>{{todos.notebookTitle}}</p>
-                    <button class="deleteNotebookButton" @click="todos.deleteNotebook(e)">X</button>
+                    <button class="deleteNotebookButton" @click="deleteNotebook(index)">X</button>
                 </div>
-                <div class="todoForm" v-for="(todo, e) in todos">
+                <div class="todoForm" v-for="(todo, index) in todos" :index="index">
                         <div class="forAddTodo" v-for="(task, x) in newTodoCase">
                             <div class="setTodos">
                              <input type="text"
@@ -42,6 +42,7 @@ Vue.component('todo-list', {
             newTodoTitle: '',
             newTodoCase: [{isCompleted: false}],
             newTaskTitle: '',
+            renameNotebook: ''
         }
     },
     mounted() {
@@ -87,7 +88,18 @@ Vue.component('todo-list', {
                 }
                 return task;
             })
-
+        },
+        renameNk(newNotebook) {
+            this.renameNotebook = newNotebook;
+            this.Notebook = this.Notebook.map(todos => {
+                if (todos.notebookTitle === newNotebook) {
+                    todos.val = !todos.val;
+                }
+                return todos;
+            })
+        },
+        deleteNotebook(index) {
+            app.todos.splice(index, 1)
         },
     }
 })
@@ -96,10 +108,9 @@ Vue.component('todo-list', {
 let app = new Vue({
     el: '#app',
     data: {
-        renameNotebook: '',
         newNotebookTitle: '',
         Notebook: [],
-        todos: []
+        todos: [],
     },
     mounted() {
         if (localStorage.getItem('Notebook')) {
@@ -118,6 +129,7 @@ let app = new Vue({
         }
     },
     methods: {
+
         saveTodos() {
             const parsedTodos = JSON.stringify(this.todos);
             localStorage.setItem('todos', parsedTodos);
@@ -133,15 +145,6 @@ let app = new Vue({
             this.newNotebookTitle = '';
             this.saveNotebook();
         },
-        renameNk(newNotebook) {
-            this.renameNotebook = newNotebook;
-            this.Notebook = this.Notebook.map(todos => {
-                if (todos.notebookTitle === newNotebook) {
-                    todos.val = !todos.val;
-                }
-                return todos;
-            })
-        },
         editNotebook(newNotebook) {
             this.Notebook = this.Notebook.map(todos => {
                 if (todos.notebookTitle === newNotebook) {
@@ -150,9 +153,6 @@ let app = new Vue({
                 }
                 return todos;
             })
-        },
-        deleteNotebook(e) {
-            this.todos.Notebook.splice(e, 1)
         }
     }
 })
