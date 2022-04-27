@@ -1,5 +1,5 @@
 Vue.component('todo-list', {
-    props: ['todos','Notebook', 'index'], template: `
+    props: ['todos', 'Notebook'], template: `
     <div>
         <div class="blockTodos">
             <div class="containerTodos">
@@ -9,9 +9,10 @@ Vue.component('todo-list', {
                                 @keyup.enter="todos.editNotebook(todos.notebookTitle)"
                                 v-model="todos.renameNotebook">
                     <p class="title" @click="renameNk(todos.notebookTitle)" v-else>{{todos.notebookTitle}}</p>
-                    <button class="deleteNotebookButton" @click="deleteNotebook(index)">X</button>
+                    <button class="deleteNotebookButton" @click="deleteNotebook(k)">X</button>
+                    
                 </div>
-                <div class="todoForm" v-for="(todo, index) in todos" :index="index">
+                <div class="todoForm" v-for="(todo, k) in todos">
                         <div class="forAddTodo" v-for="(task, x) in newTodoCase">
                             <div class="setTodos">
                              <input type="text"
@@ -32,6 +33,7 @@ Vue.component('todo-list', {
                             </form>
                         </div>
                     </div>
+                    
                 </div>
             </div>
         </div>
@@ -98,8 +100,8 @@ Vue.component('todo-list', {
                 return todos;
             })
         },
-        deleteNotebook(index) {
-            app.todos.splice(index, 1)
+        deleteNotebook(k) {
+            app.Notebook.splice(k, 1)
         },
     }
 })
