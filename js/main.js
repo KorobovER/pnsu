@@ -6,7 +6,7 @@ Vue.component('todo-list', {
                 <div class="setNotebook">
                  
                     <p class="title" v-if="val" @click="renameNk">{{todos.notebookTitle}}</p>
-                     <input class="input" v-model="renameNotebook" type="text" v-else @keyup.enter="editNotebook(newNotebook)">
+                     <input class="input" v-model="renameNotebook" type="text" v-else @keyup.enter="editNotebook(todos)">
                     <button class="deleteNotebookButton" @click="deleteNotebook">X</button>
                     
                 </div>
@@ -31,7 +31,6 @@ Vue.component('todo-list', {
                             </form>
                         </div>
                     </div>
-                    
                 </div>
             </div>
         </div>
@@ -49,32 +48,30 @@ Vue.component('todo-list', {
     mounted() {
         if (localStorage.getItem('newTodoCase')) {
             try {
-                this.Notebook = JSON.parse(localStorage.getItem('newTodoCase'));
-            } catch (e) {
+                this.newTodoCase = JSON.parse(localStorage.getItem('newTodoCase'));
+            } catch (x) {
                 localStorage.removeItem('newTodoCase');
-            }
-        }
-        if (localStorage.getItem('todos')) {
-            try {
-                this.Notebook = JSON.parse(localStorage.getItem('todos'));
-            } catch (e) {
-                localStorage.removeItem('todos');
             }
         }
     },
     methods: {
-
+        saveCase() {
+            const parsedCase = JSON.stringify(this.newTodoCase);
+            localStorage.setItem('newTodoCase', parsedCase)
+        },
         addTodo: function () {
             this.newTodoCase.push({
                 caseTitle: this.newTaskTitle,
                 isCompleted: false
             })
             this.newTaskTitle = '';
+            this.saveCase()
 
         },
 
         deleteTask(x) {
             this.newTodoCase.splice(x, 1)
+            this.saveCase()
         },
         renameTask(NewTitle) {
             this.editValue = NewTitle;
@@ -84,7 +81,7 @@ Vue.component('todo-list', {
                 }
                 return task;
             })
-
+            this.saveCase()
         },
         editTask(NewTitle) {
             this.newTodoCase = this.newTodoCase.map(task => {
@@ -94,27 +91,22 @@ Vue.component('todo-list', {
                 }
                 return task;
             })
+            this.saveCase()
         },
-        renameNk(newNotebook) {
+        renameNk() {
             this.val = !this.val;
-            this.renameNotebook = this.todos.notebookTitle;
-            newNotebook = this.renameNotebook
-            app.todos = app.todos.map(todos => {
-                return todos;
-            })
         },
-        editNotebook(newNotebook) {
-            app.todos = app.todos.map(todos => {
-                if (todos.notebookTitle === newNotebook) {
-                    this.val = !this.val;
-                    todos.notebookTitle = this.renameNotebook;
-                }
-                return todos;
-            })
+        editNotebook(todos) {
+            if (this.renameNotebook !== ""){
+                todos.notebookTitle = this.renameNotebook
+                this.val = true
+            }
+            app.saveNotebook();
         },
 
         deleteNotebook(k) {
             app.Notebook.splice(k, 1)
+            app.saveNotebook();
         },
     }
 })
@@ -138,7 +130,6 @@ let app = new Vue({
 
     },
     methods: {
-
         saveNotebook() {
             const parsedNotebook = JSON.stringify(this.Notebook);
             localStorage.setItem('Notebook', parsedNotebook);
