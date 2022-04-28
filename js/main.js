@@ -4,12 +4,10 @@ Vue.component('todo-list', {
         <div class="blockTodos">
             <div class="containerTodos">
                 <div class="setNotebook">
-                <input type="text"
-                                v-if="todos.val"
-                                @keyup.enter="todos.editNotebook(todos.notebookTitle)"
-                                v-model="todos.renameNotebook">
-                    <p class="title" @click="renameNk(todos.notebookTitle)" v-else>{{todos.notebookTitle}}</p>
-                    <button class="deleteNotebookButton" @click="deleteNotebook(k)">X</button>
+                 
+                    <p class="title" v-if="val" @click="renameNk">{{todos.notebookTitle}}</p>
+                     <input class="input" v-model="renameNotebook" type="text" v-else @keyup.enter="editNotebook(newNotebook)">
+                    <button class="deleteNotebookButton" @click="deleteNotebook">X</button>
                     
                 </div>
                 <div class="todoForm" v-for="(todo, k) in todos">
@@ -40,9 +38,10 @@ Vue.component('todo-list', {
     `,
     data() {
         return {
+            val: true,
             editValue: '',
             newTodoTitle: '',
-            newTodoCase: [{isCompleted: false}],
+            newTodoCase: [],
             newTaskTitle: '',
             renameNotebook: ''
         }
@@ -55,6 +54,13 @@ Vue.component('todo-list', {
                 localStorage.removeItem('newTodoCase');
             }
         }
+        if (localStorage.getItem('todos')) {
+            try {
+                this.Notebook = JSON.parse(localStorage.getItem('todos'));
+            } catch (e) {
+                localStorage.removeItem('todos');
+            }
+        }
     },
     methods: {
 
@@ -64,14 +70,12 @@ Vue.component('todo-list', {
                 isCompleted: false
             })
             this.newTaskTitle = '';
-            this.todos.saveTodos()
 
         },
 
         deleteTask(x) {
             this.newTodoCase.splice(x, 1)
         },
-
         renameTask(NewTitle) {
             this.editValue = NewTitle;
             this.newTodoCase = this.newTodoCase.map(task => {
@@ -92,14 +96,23 @@ Vue.component('todo-list', {
             })
         },
         renameNk(newNotebook) {
-            this.renameNotebook = newNotebook;
-            this.Notebook = this.Notebook.map(todos => {
+            this.val = !this.val;
+            this.renameNotebook = this.todos.notebookTitle;
+            newNotebook = this.renameNotebook
+            app.todos = app.todos.map(todos => {
+                return todos;
+            })
+        },
+        editNotebook(newNotebook) {
+            app.todos = app.todos.map(todos => {
                 if (todos.notebookTitle === newNotebook) {
-                    todos.val = !todos.val;
+                    this.val = !this.val;
+                    todos.notebookTitle = this.renameNotebook;
                 }
                 return todos;
             })
         },
+
         deleteNotebook(k) {
             app.Notebook.splice(k, 1)
         },
@@ -122,20 +135,10 @@ let app = new Vue({
                 localStorage.removeItem('Notebook');
             }
         }
-        if (localStorage.getItem('todos')) {
-            try {
-                this.Notebook = JSON.parse(localStorage.getItem('todos'));
-            } catch (e) {
-                localStorage.removeItem('todos');
-            }
-        }
+
     },
     methods: {
 
-        saveTodos() {
-            const parsedTodos = JSON.stringify(this.todos);
-            localStorage.setItem('todos', parsedTodos);
-        },
         saveNotebook() {
             const parsedNotebook = JSON.stringify(this.Notebook);
             localStorage.setItem('Notebook', parsedNotebook);
@@ -146,15 +149,6 @@ let app = new Vue({
             })
             this.newNotebookTitle = '';
             this.saveNotebook();
-        },
-        editNotebook(newNotebook) {
-            this.Notebook = this.Notebook.map(todos => {
-                if (todos.notebookTitle === newNotebook) {
-                    todos.val = !todos.isEditing;
-                    todos.notebookTitle = this.renameNotebook;
-                }
-                return todos;
-            })
         }
     }
 })

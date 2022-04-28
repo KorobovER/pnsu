@@ -6,7 +6,8 @@ body{
     font-weight: 300;
 }
 .input{
-    width: 65%;
+    height: 35px;
+    width: 350px;
 }
 .strike{
     background-color: #abffab;
@@ -21,7 +22,7 @@ body{
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 40%;
+    width: 60%;
 }
 .containerCreateNk{
     display: flex;
